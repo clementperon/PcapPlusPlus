@@ -92,7 +92,7 @@ if(PCAPPP_HAS_PCAP_SET_DIRECTION)
   if(NOT HAVE_PCAP_DIRECTION)
     message(FATAL_ERROR "PCAP library doesn't have Direction support!")
   endif()
-  add_definitions(-DHAS_SET_DIRECTION_ENABLED)
+  #add_definitions(-DHAS_SET_DIRECTION_ENABLED)
 endif()
 
 if(TARGET_PLATFORM_WINDOWS AND TARGET_COMPILER_MSVC)
