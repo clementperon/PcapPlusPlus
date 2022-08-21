@@ -135,7 +135,7 @@ jobs:
     strategy:
       matrix:
         include:
-          - configure: cmake -DPCAPPP_USE_PF_RING=ON -DPF_RING_HOME="/PF_RING" -S . -B $BUILD_DIR
+          - configure: cmake -DPCAPPP_USE_PF_RING=ON -DPF_RING_ROOT="/PF_RING" -S . -B $BUILD_DIR
 
     steps:
       - name: Checkout code

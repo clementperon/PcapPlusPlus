@@ -108,11 +108,11 @@ else()
 endif()
 
 if(PCAPPP_USE_DPDK)
-  add_definitions(-DUSE_DPDK)
   find_package(dpdk)
   if(NOT dpdk_FOUND)
     message(FATAL_ERROR "Specify DPDK Library with env DPDK_DIR=<DPDK_PATH>")
   endif()
+  add_definitions(-DUSE_DPDK)
 endif()
 
 # Git Commit and Branch
@@ -120,11 +120,11 @@ add_compile_definitions(GIT_COMMIT="${GIT_HASH}")
 add_compile_definitions(GIT_BRANCH="${GIT_BRANCH}")
 
 if(PCAPPP_USE_PF_RING)
+  find_package(PF_RING)
+  if(NOT PF_RING_FOUND)
+    message(FATAL_ERROR "Packet library -DPF_RING_ROOT=<PF_RING_PATH>")
+  endif()
   add_definitions(-DUSE_PF_RING)
-  set(PF_RING_HOME
-      ""
-      CACHE STRING "Sets PF_RING home directory.")
-  find_package(PF_RING REQUIRED)
 endif()
 
 if(NOT CMAKE_BUILD_TYPE)
