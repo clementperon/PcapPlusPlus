@@ -20,11 +20,9 @@ elseif(TARGET dpdk::dpdk)
 else()
   find_path(
     dpdk_config_INCLUDE_DIR rte_config.h
-    HINTS ENV DPDK_DIR
     PATH_SUFFIXES dpdk include)
   find_path(
     dpdk_common_INCLUDE_DIR rte_common.h
-    HINTS ENV DPDK_DIR
     PATH_SUFFIXES dpdk include)
   set(dpdk_INCLUDE_DIRS "${dpdk_config_INCLUDE_DIR}")
   if(NOT dpdk_config_INCLUDE_DIR STREQUAL dpdk_common_INCLUDE_DIR)
@@ -196,7 +194,7 @@ foreach(c ${components})
   else()
     find_library(
       DPDK_rte_${c}_LIBRARY rte_${c}
-      HINTS ENV DPDK_DIR ${dpdk_LIBRARY_DIRS}
+      HINTS ${dpdk_LIBRARY_DIRS}
       PATH_SUFFIXES lib)
   endif()
   if(DPDK_rte_${c}_LIBRARY)

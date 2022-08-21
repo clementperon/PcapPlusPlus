@@ -11,16 +11,13 @@
 # PF_RING_LIBRARIES            The PF_RING library
 
 # Look for static library
-find_library(
-  PF_RING_LIBRARIES libpfring.a HINTS ${PF_RING_HOME} ${PF_RING_HOME}/userland/
-                                      ${PF_RING_HOME}/userland/lib)
+find_library(PF_RING_LIBRARIES libpfring.a PATH_SUFFIXES userland)
 
 find_path(PF_RING_USER_INCLUDE_DIR pfring.h
           HINTS ${PF_RING_HOME} ${PF_RING_HOME}/userland
                 ${PF_RING_HOME}/userland/lib)
 
-find_path(PF_RING_KERNEL_INCLUDE_DIR linux/pf_ring.h
-          HINTS ${PF_RING_HOME} ${PF_RING_HOME}/kernel)
+find_path(PF_RING_KERNEL_INCLUDE_DIR linux/pf_ring.h PATH_SUFFIXES kernel)
 
 include(FindPackageHandleStandardArgs)
 find_package_handle_standard_args(
