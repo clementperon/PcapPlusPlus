@@ -4,7 +4,7 @@ add_library(
   $<$<BOOL:${PCAPPP_USE_DPDK}>:src/DpdkDeviceList.cpp>
   $<$<BOOL:${PCAPPP_USE_DPDK}>:src/KniDevice.cpp>
   $<$<BOOL:${PCAPPP_USE_DPDK}>:src/KniDeviceList.cpp>
-  $<$<BOOL:${TARGET_PLATFORM_LINUX}>:src/LinuxNicInformationSocket.cpp>
+  $<$<BOOL:${PCAPPP_TARGET_PLATFORM_LINUX}>:src/LinuxNicInformationSocket.cpp>
   $<$<BOOL:${PCAPPP_USE_DPDK}>:src/MBufRawPacket.cpp>
   src/NetworkUtils.cpp
   src/PcapDevice.cpp
@@ -12,12 +12,12 @@ add_library(
   src/PcapFilter.cpp
   src/PcapLiveDevice.cpp
   src/PcapLiveDeviceList.cpp
-  $<$<BOOL:${TARGET_PLATFORM_WINDOWS}>:src/PcapRemoteDevice.cpp>
-  $<$<BOOL:${TARGET_PLATFORM_WINDOWS}>:src/PcapRemoteDeviceList.cpp>
+  $<$<BOOL:${PCAPPP_TARGET_PLATFORM_WINDOWS}>:src/PcapRemoteDevice.cpp>
+  $<$<BOOL:${PCAPPP_TARGET_PLATFORM_WINDOWS}>:src/PcapRemoteDeviceList.cpp>
   $<$<BOOL:${PCAPPP_USE_PF_RING}>:src/PfRingDevice.cpp>
   $<$<BOOL:${PCAPPP_USE_PF_RING}>:src/PfRingDeviceList.cpp>
   src/RawSocketDevice.cpp
-  $<$<BOOL:${TARGET_PLATFORM_WINDOWS}>:src/WinPcapLiveDevice.cpp>
+  $<$<BOOL:${PCAPPP_TARGET_PLATFORM_WINDOWS}>:src/WinPcapLiveDevice.cpp>
   # Force light pcapng to be link fully static
   $<TARGET_OBJECTS:light_pcapng>)
 
@@ -42,22 +42,22 @@ if(PCAPPP_USE_PF_RING)
                      header/PfRingDeviceList.h)
 endif()
 
-if(TARGET_PLATFORM_LINUX)
+if(PCAPPP_TARGET_PLATFORM_LINUX)
   set(public_headers ${public_headers} header/LinuxNicInformationSocket.h)
 endif()
 
-if(TARGET_PLATFORM_WINDOWS)
+if(PCAPPP_TARGET_PLATFORM_WINDOWS)
   set(public_headers ${public_headers} header/WinPcapLiveDevice.h
                      header/PcapRemoteDevice.h header/PcapRemoteDeviceList.h)
 endif()
 
 set_property(TARGET Pcap++ PROPERTY PUBLIC_HEADER ${public_headers})
 
-if(TARGET_PLATFORM_MACOS)
+if(PCAPPP_TARGET_PLATFORM_MACOS)
   find_package(MACOS)
   target_link_libraries(Pcap++ PUBLIC ${MACOS_CORE_FOUNDATION_LIBRARY}
                                       ${MACOS_SYSTEM_CONFIGURATION_LIBRARY})
-elseif(TARGET_PLATFORM_WINDOWS)
+elseif(PCAPPP_TARGET_PLATFORM_WINDOWS)
   target_compile_definitions(Pcap++ PUBLIC -DHAVE_REMOTE)
   target_compile_definitions(Pcap++ PUBLIC -DWPCAP)
   # pthreads-win32's pthread.h doesn't have the valid include guards for this
@@ -84,12 +84,6 @@ target_link_libraries(
 
 if(LIGHT_PCAPNG_ZSTD)
   target_link_libraries(Pcap++ PRIVATE light_pcapng)
-endif()
-
-# Static linking GCC/Threads for minGW (Windows + GNU)
-if(TARGET_PLATFORM_WINDOWS AND TARGET_COMPILER_GCC)
-  target_link_libraries(Pcap++ PUBLIC -static-libgcc -static-libstdc++)
-  target_link_libraries(Pcap++ PUBLIC -static ${_PCAPP_THREADS})
 endif()
 
 if(PCAPPP_INSTALL)

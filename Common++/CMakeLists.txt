@@ -22,6 +22,7 @@ set(public_headers
     header/TablePrinter.h
     header/TimespecTimeval.h)
 
+# Set the public header that will be installed
 set_property(TARGET Common++ PROPERTY PUBLIC_HEADER ${public_headers})
 
 target_include_directories(
@@ -31,7 +32,7 @@ target_include_directories(
   # Don't link with EndianPortable as it won't be exported
   PRIVATE $<TARGET_PROPERTY:EndianPortable,INTERFACE_INCLUDE_DIRECTORIES>)
 
-if(TARGET_PLATFORM_WINDOWS)
+if(PCAPPP_TARGET_PLATFORM_WINDOWS)
   target_link_libraries(Common++ PUBLIC ws2_32 iphlpapi)
 endif()
 

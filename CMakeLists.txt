@@ -31,7 +31,7 @@ include(CMakePackageConfigHelpers)
 include(DetectCompiler)
 include(DetectOS)
 include(GNUInstallDirs)
-set(PCAPP_INSTALL_LIBDIR ${CMAKE_INSTALL_LIBDIR}/pcapplusplus)
+set(PCAPP_INSTALL_LIBDIR ${CMAKE_INSTALL_LIBDIR})
 set(PCAPP_INSTALL_INCLUDEDIR ${CMAKE_INSTALL_INCLUDEDIR}/pcapplusplus)
 set(PCAPP_INSTALL_CMAKEDIR ${CMAKE_INSTALL_LIBDIR}/cmake/pcapplusplus)
 
@@ -54,17 +54,22 @@ set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_EXTENSIONS ON)
 
 # Do we need Packet Packages on Windows ?
-if(TARGET_PLATFORM_WINDOWS)
+if(PCAPPP_TARGET_PLATFORM_WINDOWS)
   find_package(Packet)
   if(NOT Packet_FOUND)
-    message(FATAL_ERROR "Packet library -DPacket_ROOT=<NPCAP_SDK_PATH>")
+    message(
+      FATAL_ERROR "Please specify Packet library -DPacket_ROOT=<NPCAP_SDK_PATH>"
+    )
   endif()
 endif()
 
 find_package(PCAP)
 if(NOT PCAP_FOUND)
-  if(TARGET_PLATFORM_WINDOWS)
-    message("Specify NPCAP Library with -DPCAP_ROOT=<NPCAP_SDK_PATH>")
+  if(PCAPPP_TARGET_PLATFORM_WINDOWS)
+    message(
+      FATAL_ERROR
+        "Please specify Npcap/WinPcap SDK directory with -DPCAP_ROOT=<PCAP_SDK_PATH>"
+    )
   else()
     message(FATAL_ERROR "PCAP library not found!")
   endif()
@@ -95,7 +100,7 @@ if(PCAPPP_HAS_PCAP_SET_DIRECTION)
   add_definitions(-DHAS_SET_DIRECTION_ENABLED)
 endif()
 
-if(TARGET_PLATFORM_WINDOWS AND TARGET_COMPILER_MSVC)
+if(PCAPPP_TARGET_PLATFORM_WINDOWS AND PCAPPP_TARGET_COMPILER_MSVC)
   # Other hacks for VStudio
   add_definitions(-D_CRT_SECURE_NO_WARNINGS)
 else()
@@ -134,7 +139,7 @@ if(NOT CMAKE_BUILD_TYPE)
   set_property(CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS "Debug" "Release")
 endif()
 
-if(TARGET_COMPILER_CLANG OR TARGET_COMPILER_GCC)
+if(PCAPPP_TARGET_COMPILER_CLANG OR PCAPPP_TARGET_COMPILER_GCC)
   add_compile_options(-Wall -g)
 endif()
 
@@ -152,7 +157,6 @@ if(BUILD_TESTING)
   include(CTest)
   add_subdirectory(Tests)
 endif()
-
 
 if(PCAPPP_INSTALL)
   set(CPACK_DEBIAN_PACKAGE_MAINTAINER "seladb")
