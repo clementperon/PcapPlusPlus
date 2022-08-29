@@ -6,6 +6,7 @@ env:
 
 jobs:
   pre-commit:
+    if: ${{ false }} # disable for now
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -13,6 +14,7 @@ jobs:
       - uses: pre-commit/action@v2.0.3
 
   linux:
+    if: ${{ false }} # disable for now
     runs-on: ubuntu-20.04
     container: seladb/${{ matrix.image }}
     strategy:
@@ -87,6 +89,7 @@ jobs:
           cd Examples/Tutorials/Tutorial-HelloWorld && ./Tutorial-HelloWorld
 
   dpdk:
+    if: ${{ false }} # disable for now
     runs-on: ubuntu-20.04
     container: seladb/${{ matrix.image }}
     strategy:
@@ -130,6 +133,7 @@ jobs:
           if [ -n "$(grep avx512 /proc/cpuinfo)" ]; then Bin/Pcap++Test -n; else echo AVX-512 SUPPORT NOT FOUND, CANNOT RUN Pcap++Test; fi
 
   pfring:
+    if: ${{ false }} # disable for now
     runs-on: ubuntu-20.04
     container: seladb/ubuntu2004-pfring
     strategy:
@@ -165,6 +169,7 @@ jobs:
           Bin/Pcap++Test -n
 
   macos:
+    if: ${{ false }} # disable for now
     runs-on: ${{ matrix.os-version }}
     strategy:
       matrix:
@@ -299,6 +304,7 @@ jobs:
           python -m pytest --root-path=../../Dist/examples_bin
 
   visual-studio:
+    if: ${{ false }} # disable for now
     strategy:
       matrix:
         os: [windows-2019, windows-2022]
@@ -368,6 +374,7 @@ jobs:
           python -m pytest --root-path=../../Dist/examples_bin
 
   android:
+    if: ${{ false }} # disable for now
     strategy:
       matrix:
         include:
