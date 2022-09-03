@@ -60,11 +60,6 @@ if(TARGET_PLATFORM_MACOS)
 elseif(TARGET_PLATFORM_WINDOWS)
   target_compile_definitions(Pcap++ PUBLIC -DHAVE_REMOTE)
   target_compile_definitions(Pcap++ PUBLIC -DWPCAP)
-  # pthreads-win32's pthread.h doesn't have the valid include guards for this
-  # case (shame on them!). pthreads tries to declare it because it needs it
-  # internally, but since it's possible it won't need the entire time.h, it
-  # tries to declare only the timespec if possible.
-  target_compile_definitions(Pcap++ PUBLIC -DHAVE_STRUCT_TIMESPEC)
   target_link_libraries(Pcap++ PUBLIC ws2_32 iphlpapi)
   target_link_libraries(Pcap++ PUBLIC ${Packet_LIBRARY})
 endif()
