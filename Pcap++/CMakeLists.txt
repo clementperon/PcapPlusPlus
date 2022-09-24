@@ -87,9 +87,7 @@ target_link_libraries(
   PUBLIC Common++
          Packet++
          $<$<BOOL:${PCAPPP_USE_PF_RING}>:PF_RING::PF_RING>
-         $<$<BOOL:${PCAPPP_USE_DPDK}>:dpdk::dpdk>
-         PCAP::PCAP
-         Threads::Threads)
+         $<$<BOOL:${PCAPPP_USE_DPDK}>:dpdk::dpdk>)
 
 if(LIGHT_PCAPNG_ZSTD)
   target_link_libraries(Pcap++ PRIVATE light_pcapng)
@@ -97,9 +95,9 @@ endif()
 
 # Static linking GCC/Threads for minGW (Windows + GNU)
 if(PCAPPP_TARGET_PLATFORM_WINDOWS AND PCAPPP_TARGET_COMPILER_GCC)
-  message(FATAL_ERROR "COMPILING HEEERE")
   target_link_libraries(Pcap++ PUBLIC -static-libgcc -static-libstdc++)
   target_link_libraries(Pcap++ PUBLIC -static Threads::Threads)
+  target_link_libraries(Pcap++ PUBLIC -static PCAP::PCAP)
 endif()
 
 if(PCAPPP_INSTALL)
