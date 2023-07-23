@@ -257,7 +257,7 @@ jobs:
             cmake --build "$LOCAL_BUILD_DIR" -j --target package; \
             tar -xvf ${LOCAL_BUILD_DIR}/*.tar.gz --directory "${COMBINE_PACKAGE_DIR}"; \
           done
-          cd "${COMBINE_PACKAGE_DIR}" && tar -czvf android-combined.tar.gz .
+          tar -czvf "${BUILD_DIR}/android-combined.tar.gz" -C "${COMBINE_PACKAGE_DIR}" .
 
       - name: Upload binaries to release
         uses: ncipollo/release-action@v1
