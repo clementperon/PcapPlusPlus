@@ -9,222 +9,222 @@ env:
   BUILD_DIR: Dist
 
 jobs:
-  linux:
-    runs-on: ubuntu-20.04
-    container: seladb/${{ matrix.image }}
-    strategy:
-      matrix:
-        include:
-          - image: ubuntu2204
-            config-zstd: OFF
-          - image: ubuntu2204-icpx
-            config-zstd: OFF
-            additional-flags: -DCMAKE_C_COMPILER=icx -DCMAKE_CXX_COMPILER=icpx
-          - image: ubuntu2004
-            config-zstd: OFF
-          - image: ubuntu1804
-            config-zstd: OFF
-          - image: centos7
-            config-zstd: OFF
-          - image: fedora37
-            config-zstd: OFF
-          - image: alpine317
-            config-zstd: OFF
+  # linux:
+  #   runs-on: ubuntu-20.04
+  #   container: seladb/${{ matrix.image }}
+  #   strategy:
+  #     matrix:
+  #       include:
+  #         - image: ubuntu2204
+  #           config-zstd: OFF
+  #         - image: ubuntu2204-icpx
+  #           config-zstd: OFF
+  #           additional-flags: -DCMAKE_C_COMPILER=icx -DCMAKE_CXX_COMPILER=icpx
+  #         - image: ubuntu2004
+  #           config-zstd: OFF
+  #         - image: ubuntu1804
+  #           config-zstd: OFF
+  #         - image: centos7
+  #           config-zstd: OFF
+  #         - image: fedora37
+  #           config-zstd: OFF
+  #         - image: alpine317
+  #           config-zstd: OFF
 
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
+  #   steps:
+  #     - name: Checkout code
+  #       uses: actions/checkout@v3
 
-      - name: Setup Intel Compiler variables
-        if: contains(matrix.image, 'icpx')
-        run: |
-          . /opt/intel/oneapi/setvars.sh
-          printenv >> $GITHUB_ENV
+  #     - name: Setup Intel Compiler variables
+  #       if: contains(matrix.image, 'icpx')
+  #       run: |
+  #         . /opt/intel/oneapi/setvars.sh
+  #         printenv >> $GITHUB_ENV
 
-      - name: Debug Cmake
-        run: cmake --system-information
+  #     - name: Debug Cmake
+  #       run: cmake --system-information
 
-      - name: Configure PcapPlusPlus
-        run: cmake -DPCAPPP_PACKAGE=ON -DLIGHT_PCAPNG_ZSTD=${{ matrix.config-zstd }} ${{ matrix.additional-flags }} -S . -B "$BUILD_DIR"
+  #     - name: Configure PcapPlusPlus
+  #       run: cmake -DPCAPPP_PACKAGE=ON -DLIGHT_PCAPNG_ZSTD=${{ matrix.config-zstd }} ${{ matrix.additional-flags }} -S . -B "$BUILD_DIR"
 
-      - name: Build PcapPlusPlus
-        run: cmake --build "$BUILD_DIR" -j
+  #     - name: Build PcapPlusPlus
+  #       run: cmake --build "$BUILD_DIR" -j
 
-      - name: Package
-        run: cmake --build "$BUILD_DIR" --target package
+  #     - name: Package
+  #       run: cmake --build "$BUILD_DIR" --target package
 
-      - name: Upload binaries to release
-        uses: ncipollo/release-action@v1
-        with:
-          allowUpdates: true
-          artifacts: "${{ env.BUILD_DIR }}/*.tar.gz,${{ env.BUILD_DIR }}/*.deb,${{ env.BUILD_DIR }}/*.rpm"
+  #     - name: Upload binaries to release
+  #       uses: ncipollo/release-action@v1
+  #       with:
+  #         allowUpdates: true
+  #         artifacts: "${{ env.BUILD_DIR }}/*.tar.gz,${{ env.BUILD_DIR }}/*.deb,${{ env.BUILD_DIR }}/*.rpm"
 
-  freebsd:
-    runs-on: macos-12
-    strategy:
-      matrix:
-        include:
-          - freebsd-version: "12.3"
-          - freebsd-version: "13.1"
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
+  # freebsd:
+  #   runs-on: macos-12
+  #   strategy:
+  #     matrix:
+  #       include:
+  #         - freebsd-version: "12.3"
+  #         - freebsd-version: "13.1"
+  #   steps:
+  #     - name: Checkout code
+  #       uses: actions/checkout@v3
 
-      - name: Test in FreeBSD
-        uses: vmactions/freebsd-vm@v0
-        with:
-          release: ${{ matrix.freebsd-version }}
-          envs: 'BUILD_DIR'
-          usesh: true
-          prepare: |
-            pkg install -y bash cmake git-tiny gmake gsed libpcap py39-pip
-          run: |
-            cmake -DPCAPPP_PACKAGE=ON -S . -B "$BUILD_DIR"
-            cmake --build "$BUILD_DIR" -j 4
-            cmake --build "$BUILD_DIR" --target package
+  #     - name: Test in FreeBSD
+  #       uses: vmactions/freebsd-vm@v0
+  #       with:
+  #         release: ${{ matrix.freebsd-version }}
+  #         envs: 'BUILD_DIR'
+  #         usesh: true
+  #         prepare: |
+  #           pkg install -y bash cmake git-tiny gmake gsed libpcap py39-pip
+  #         run: |
+  #           cmake -DPCAPPP_PACKAGE=ON -S . -B "$BUILD_DIR"
+  #           cmake --build "$BUILD_DIR" -j 4
+  #           cmake --build "$BUILD_DIR" --target package
 
-      - name: Upload binaries to release
-        uses: ncipollo/release-action@v1
-        with:
-          allowUpdates: true
-          artifacts: ${{ env.BUILD_DIR }}/*.tar.gz
+  #     - name: Upload binaries to release
+  #       uses: ncipollo/release-action@v1
+  #       with:
+  #         allowUpdates: true
+  #         artifacts: ${{ env.BUILD_DIR }}/*.tar.gz
 
-  macos:
-    runs-on: ${{ matrix.os-version }}
-    strategy:
-      matrix:
-        os-version: [macos-11, macos-12]
-        arch: [x86_64, arm64]
-        # Handle ZSTD build by Cirrus CI
-        # config-zstd: [ON, OFF]
-        config-zstd: [OFF]
-        exclude:
-          # excludes ZSTD on Arm64
-          - arch: arm64
-            config-zstd: ON
+  # macos:
+  #   runs-on: ${{ matrix.os-version }}
+  #   strategy:
+  #     matrix:
+  #       os-version: [macos-11, macos-12]
+  #       arch: [x86_64, arm64]
+  #       # Handle ZSTD build by Cirrus CI
+  #       # config-zstd: [ON, OFF]
+  #       config-zstd: [OFF]
+  #       exclude:
+  #         # excludes ZSTD on Arm64
+  #         - arch: arm64
+  #           config-zstd: ON
 
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
+  #   steps:
+  #     - name: Checkout code
+  #       uses: actions/checkout@v3
 
-      - name: Configure PcapPlusPlus
-        run: |
-          cmake -DPCAPPP_PACKAGE=ON -DLIGHT_PCAPNG_ZSTD=${{ matrix.config-zstd }} -DCMAKE_OSX_ARCHITECTURES=${{ matrix.arch }} -S . -B "$BUILD_DIR"
+  #     - name: Configure PcapPlusPlus
+  #       run: |
+  #         cmake -DPCAPPP_PACKAGE=ON -DLIGHT_PCAPNG_ZSTD=${{ matrix.config-zstd }} -DCMAKE_OSX_ARCHITECTURES=${{ matrix.arch }} -S . -B "$BUILD_DIR"
 
-      - name: Build PcapPlusPlus
-        run: cmake --build "$BUILD_DIR" -j
+  #     - name: Build PcapPlusPlus
+  #       run: cmake --build "$BUILD_DIR" -j
 
-      - name: Package
-        run: cmake --build "$BUILD_DIR" --target package
+  #     - name: Package
+  #       run: cmake --build "$BUILD_DIR" --target package
 
-      - name: Upload binaries to release
-        uses: ncipollo/release-action@v1
-        with:
-          allowUpdates: true
-          artifacts: "${{ env.BUILD_DIR }}/*.tar.gz,${{ env.BUILD_DIR }}/*.pkg"
+  #     - name: Upload binaries to release
+  #       uses: ncipollo/release-action@v1
+  #       with:
+  #         allowUpdates: true
+  #         artifacts: "${{ env.BUILD_DIR }}/*.tar.gz,${{ env.BUILD_DIR }}/*.pkg"
 
-  mingw-w64:
-    runs-on: windows-latest
-    strategy:
-      matrix:
-        include:
-          - env: i686
-            sys: mingw32
-          - env: x86_64
-            sys: mingw64
+  # mingw-w64:
+  #   runs-on: windows-latest
+  #   strategy:
+  #     matrix:
+  #       include:
+  #         - env: i686
+  #           sys: mingw32
+  #         - env: x86_64
+  #           sys: mingw64
 
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
+  #   steps:
+  #     - name: Checkout code
+  #       uses: actions/checkout@v3
 
-      - name: Setup MSYS2
-        uses: msys2/setup-msys2@v2
-        with:
-          msystem: ${{matrix.sys}}
-          update: true
-          install: >-
-            git
-            mingw-w64-${{matrix.env}}-cmake
-            mingw-w64-${{matrix.env}}-gcc
-            mingw-w64-${{matrix.env}}-make
+  #     - name: Setup MSYS2
+  #       uses: msys2/setup-msys2@v2
+  #       with:
+  #         msystem: ${{matrix.sys}}
+  #         update: true
+  #         install: >-
+  #           git
+  #           mingw-w64-${{matrix.env}}-cmake
+  #           mingw-w64-${{matrix.env}}-gcc
+  #           mingw-w64-${{matrix.env}}-make
 
-      - name: Install NPcap
-        env:
-          NPCAP_USERNAME: ${{ secrets.NPCAP_USERNAME }}
-          NPCAP_PASSWORD: ${{ secrets.NPCAP_PASSWORD }}
-        run: |
-          ci\install_npcap.bat
-          echo "PCAP_SDK_DIR=/C/Npcap-sdk" >> $env:GITHUB_ENV
+  #     - name: Install NPcap
+  #       env:
+  #         NPCAP_USERNAME: ${{ secrets.NPCAP_USERNAME }}
+  #         NPCAP_PASSWORD: ${{ secrets.NPCAP_PASSWORD }}
+  #       run: |
+  #         ci\install_npcap.bat
+  #         echo "PCAP_SDK_DIR=/C/Npcap-sdk" >> $env:GITHUB_ENV
 
-      - name: Configure PcapPlusPlus
-        shell: msys2 {0}
-        run: |
-          cmake -G "MinGW Makefiles" -DPCAP_ROOT=/C/Npcap-sdk -DLIGHT_PCAPNG_ZSTD=OFF -DPCAPPP_PACKAGE=ON -S . -B "$BUILD_DIR"
+  #     - name: Configure PcapPlusPlus
+  #       shell: msys2 {0}
+  #       run: |
+  #         cmake -G "MinGW Makefiles" -DPCAP_ROOT=/C/Npcap-sdk -DLIGHT_PCAPNG_ZSTD=OFF -DPCAPPP_PACKAGE=ON -S . -B "$BUILD_DIR"
 
-      - name: Debug Cmake
-        shell: msys2 {0}
-        run: cmake --system-information
+  #     - name: Debug Cmake
+  #       shell: msys2 {0}
+  #       run: cmake --system-information
 
-      - name: Build PcapPlusPlus
-        shell: msys2 {0}
-        # More than 2 jobs would make the build crash with OOM
-        # cc1plus.exe: out of memory allocating 65536 bytes
-        run: cmake --build "$BUILD_DIR" -j 2
+  #     - name: Build PcapPlusPlus
+  #       shell: msys2 {0}
+  #       # More than 2 jobs would make the build crash with OOM
+  #       # cc1plus.exe: out of memory allocating 65536 bytes
+  #       run: cmake --build "$BUILD_DIR" -j 2
 
-      - name: Package
-        shell: msys2 {0}
-        run: cmake --build "$BUILD_DIR" --target package
+  #     - name: Package
+  #       shell: msys2 {0}
+  #       run: cmake --build "$BUILD_DIR" --target package
 
-      - name: Upload binaries to release
-        uses: ncipollo/release-action@v1
-        with:
-          allowUpdates: true
-          artifacts: ${{ env.BUILD_DIR }}/*.zip
+  #     - name: Upload binaries to release
+  #       uses: ncipollo/release-action@v1
+  #       with:
+  #         allowUpdates: true
+  #         artifacts: ${{ env.BUILD_DIR }}/*.zip
 
-  visual-studio:
-    strategy:
-      matrix:
-        include:
-          - os: "windows-2019"
-            platform: "Visual Studio 16 2019"
-            arch: "x64"
-          - os: windows-2019
-            platform: "Visual Studio 16 2019"
-            arch: Win32
-          - os: windows-2022
-            platform: "Visual Studio 17 2022"
-            arch: "x64"
-          - os: windows-2022
-            platform: "Visual Studio 17 2022"
-            arch: Win32
+  # visual-studio:
+  #   strategy:
+  #     matrix:
+  #       include:
+  #         - os: "windows-2019"
+  #           platform: "Visual Studio 16 2019"
+  #           arch: "x64"
+  #         - os: windows-2019
+  #           platform: "Visual Studio 16 2019"
+  #           arch: Win32
+  #         - os: windows-2022
+  #           platform: "Visual Studio 17 2022"
+  #           arch: "x64"
+  #         - os: windows-2022
+  #           platform: "Visual Studio 17 2022"
+  #           arch: Win32
 
-    runs-on: ${{ matrix.os }}
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
+  #   runs-on: ${{ matrix.os }}
+  #   steps:
+  #     - name: Checkout code
+  #       uses: actions/checkout@v3
 
-      - name: Add MSBuild to PATH
-        uses: microsoft/setup-msbuild@v1
+  #     - name: Add MSBuild to PATH
+  #       uses: microsoft/setup-msbuild@v1
 
-      - name: Install WinPcap
-        run: |
-          ci\install_winpcap.bat
-          echo "PCAP_SDK_DIR=C:\WpdPack" >> $env:GITHUB_ENV
+  #     - name: Install WinPcap
+  #       run: |
+  #         ci\install_winpcap.bat
+  #         echo "PCAP_SDK_DIR=C:\WpdPack" >> $env:GITHUB_ENV
 
-      - name: Configure PcapPlusPlus
-        run: cmake -A ${{ matrix.arch }} -G "${{ matrix.platform }}" -DPCAP_ROOT=${{ env.PCAP_SDK_DIR }} -DPCAPPP_PACKAGE=ON -S . -B "$env:BUILD_DIR"
+  #     - name: Configure PcapPlusPlus
+  #       run: cmake -A ${{ matrix.arch }} -G "${{ matrix.platform }}" -DPCAP_ROOT=${{ env.PCAP_SDK_DIR }} -DPCAPPP_PACKAGE=ON -S . -B "$env:BUILD_DIR"
 
-      - name: Build PcapPlusPlus
-        run: cmake --build $env:BUILD_DIR -j
+  #     - name: Build PcapPlusPlus
+  #       run: cmake --build $env:BUILD_DIR -j
 
-      - name: Package
-        run: cmake --build "$env:BUILD_DIR" --target package
+  #     - name: Package
+  #       run: cmake --build "$env:BUILD_DIR" --target package
 
-      - name: Upload binaries to release
-        uses: ncipollo/release-action@v1
-        with:
-          allowUpdates: true
-          artifacts: ${{ env.BUILD_DIR }}/*.zip
+  #     - name: Upload binaries to release
+  #       uses: ncipollo/release-action@v1
+  #       with:
+  #         allowUpdates: true
+  #         artifacts: ${{ env.BUILD_DIR }}/*.zip
 
   android-build:
     strategy:
@@ -274,4 +274,4 @@ jobs:
       - uses: actions/upload-artifact@master
         with:
           name: my-artifact
-          path: ${BUILD_DIR}/{{ matrix.target }}/${{ matrix.api-version }}/*.tar.gz
+          path: ${BUILD_DIR}/${{ matrix.target }}/${{ matrix.api-version }}/*.tar.gz
