@@ -292,9 +292,6 @@ jobs:
         with:
           name: android-package
 
-      - name: Display structure of downloaded files
-        run: ls -R
-
       - name: Package into archive
         run: |
           export PACKAGE_DIR=$(ls | grep pcapplusplus)
