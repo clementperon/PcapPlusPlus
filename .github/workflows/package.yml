@@ -271,11 +271,25 @@ jobs:
           cmake -DPCAPPP_BUILD_EXAMPLES=OFF -DCMAKE_INSTALL_LIBDIR="${LIB_DIR}" -DCMAKE_TOOLCHAIN_FILE="${ANDROID_NDK}/build/cmake/android.toolchain.cmake" -DANDROID_PLATFORM="${{ matrix.api-version }}" -DANDROID_ABI="${{ matrix.target }}" -DPCAP_INCLUDE_DIR="${LIBPCAP_PATH}/include/" -DPCAP_LIBRARY="${LIBPCAP_PATH}/${{ matrix.target }}/${{ matrix.api-version}}/libpcap.a" -DPCAPPP_PACKAGE=ON -S . -B "$LOCAL_BUILD_DIR"
           cmake --build "$LOCAL_BUILD_DIR" -j --target package
 
+      - name: Prepare package
+        run: |
+          export LOCAL_BUILD_DIR="${BUILD_DIR}/${{ matrix.target }}/${{ matrix.api-version }}"
+          export PACKAGE_FILE=$(ls ${LOCAL_BUILD_DIR} | grep pcapplusplus)
+          export PACKAGE_DIR=$(basename ${PACKAGE_FILE%} .tar.gz)
+          export COMBINE_PACKAGE_DIR=$(echo "$PACKAGE_DIR" | cut -f1,2,3 -d'-')
+          echo "COMBINE_PACKAGE_DIR=$COMBINE_PACKAGE_DIR" >> $GITHUB_ENV
+
+          tar -xvf "${LOCAL_BUILD_DIR}/${PACKAGE_FILE}"
+          mv "${PACKAGE_DIR}" "${COMBINE_PACKAGE_DIR}"
+          find . -name example-app -type d -exec rm -r {} +
+          find . -name cmake -type d -exec rm -r {} +
+          find . -name pkgconfig -type d -exec rm -r {} +
+
       - uses: actions/upload-artifact@v3
         with:
           name: android-packages
           if-no-files-found: error
-          path: ${{ env.BUILD_DIR }}/${{ matrix.target }}/${{ matrix.api-version }}/*.tar.gz
+          path: ${{ env.COMBINE_PACKAGE_DIR }}
 
   android-package:
     needs: android-build
