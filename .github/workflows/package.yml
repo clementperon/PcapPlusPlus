@@ -32,7 +32,7 @@ jobs:
             config-zstd: OFF
           - image: rhel93
             config-zstd: OFF
-          - image: fedora37
+          - image: fedora40
             config-zstd: OFF
           - image: alpine317
             config-zstd: OFF
