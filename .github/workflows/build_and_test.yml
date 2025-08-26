@@ -540,7 +540,7 @@ jobs:
           NPCAP_USERNAME: ${{ secrets.NPCAP_USERNAME }}
           NPCAP_PASSWORD: ${{ secrets.NPCAP_PASSWORD }}
         run: |
-          ci\install_npcap.bat
+          powershell -ExecutionPolicy Bypass -File ci\install_npcap.ps1
           echo "PCAP_SDK_DIR=/C/Npcap-sdk" >> $env:GITHUB_ENV
         if: matrix.pcap_lib == 'npcap'
 
@@ -641,7 +641,7 @@ jobs:
           NPCAP_USERNAME: ${{ secrets.NPCAP_USERNAME }}
           NPCAP_PASSWORD: ${{ secrets.NPCAP_PASSWORD }}
         run: |
-          ci\install_npcap.bat
+          powershell -ExecutionPolicy Bypass -File ci\install_npcap.ps1
           echo "PCAP_SDK_DIR=C:\Npcap-sdk" >> $env:GITHUB_ENV
         if: matrix.pcap_lib == 'npcap'
 
